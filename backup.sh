@@ -61,6 +61,7 @@ echo "Creating SQL Backup"
 cd $backupdir
 mysqldump --defaults-extra-file=/root/.my.cnf --all-databases > dump-$( date -I).sql
 tar -zcvf $( date -I)-dump.tar.gz dump-$( date -I).sql
+rm -f dump-$( date -I).sql
 
 echo "Creating compressed archive files for backup using tar"
 cd $backupdir
