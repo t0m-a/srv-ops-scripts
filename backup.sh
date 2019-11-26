@@ -3,16 +3,15 @@
 # http://rclone.org/
 # http://rclone.org/docs/
 # You WILL NEED to have rcloned install and configured prior to running this script.
-####################################################################################
-
+# Retention policies have to be configured on the backup targets using cleanBackup.sh
+#####################################################################################
 PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 ######### VARIABLES DECLARATIONS ###############################################
-# FOLDERS DECLARATION SECTION: local and remote folders for backup files storage
 backupdir='/srv/backup'
 googledrivebackupdir='insert_path_to_directory'
 remoteserverbackupdir="user@host:/srv/backup"
-threedaysago=$(date +%m-%d-%Y -d "3 days ago")
+twodaysago=$(date +%m-%d-%Y -d "2 days ago")
 results=()
 
 # FOLDERS DECLARATION SECTION: folders to backup
@@ -51,8 +50,8 @@ if echo "$answer" | grep -iq "^y";then
     exit $?
 fi
 fi
-######### BACKUP SECTION #######################################################
 
+######### BACKUP SECTION #######################################################
 echo "Creating local backups storage folder if it doesn't exist"
 mkdir -p $backupdir
 sleep 1
@@ -72,23 +71,25 @@ tar -zcf $name2.tar.gz $dirtobackup2;
 #tar -zcvf $name4.tar.gz $dirtobackup4;
 #tar -zcvf $name5.tar.gz $dirtobackup5;
 
-echo "Archives created, you may like to check the files list below:"
+echo "New backups created:"
 ls -lhA $backupdir
 
-echo "Now exporting local backups to your remote Google Drive folder"
-rclone copy $backupdir $googledrivebackupdir
-
-echo "Replicating backups to EC2 remote instance"
-
-rsync -au $backupdir/* $remoteserverbackupdir
-
-echo "Cleaning up local backup directory"
+echo "Cleaning up local directory, removing all backups older than 1 day before export..."
+# We list all files in destination getting their date in an array called results
 for i in "$backupdir"/*; do
     results+=( "$(date -r "$i" "+%m-%d-%Y")");
 done
+# If we have files NEWER than two days ago in this list
 for d in "${results[@]}"; do
-if [[ "$d" > "$threedaysago" ]]; then
-find $backupdir -mtime +3 -print0 | xargs -r0 rm -rf -- '{}';
+if [[ "$d" > "$twodaysago" ]]; then
+# Then we delete the all the backups files older than 1 days
+find $backupdir -mtime +1 -print0 | xargs -r0 rm -rf -- '{}';
 fi
 done
+
+echo "Exporting local backups to remote Google storage..."
+rclone copy $backupdir $googledrivebackupdir
+
+echo "Replicating backups to AWS EC2 remote storage..."
+rsync -au $backupdir/* $remoteserverbackupdir
 exit 0
