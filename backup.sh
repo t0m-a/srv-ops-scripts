@@ -75,7 +75,7 @@ echo "Archives created, you may like to check the files list below:"
 ls -lhA $backupdir
 
 echo "Now exporting local backups to your remote Google Drive folder"
-rclone copy $backupdir/* $googledrivebackupdir
+rclone copy $backupdir $googledrivebackupdir
 
 echo "Replicating backups to EC2 remote instance"
 
@@ -83,7 +83,7 @@ rsync -au $backupdir/* $remoteserverbackupdir
 
 echo "Cleaning up local backup directory"
 for i in "$backupdir"/*; do
-    results+=( "$(date -r "$backupdir/$i" "+%m-%d-%Y")");
+    results+=( "$(date -r "$i" "+%m-%d-%Y")");
 done
 for d in "${results[@]}"; do
 if [[ "$d" > "$threedaysago" ]]; then
