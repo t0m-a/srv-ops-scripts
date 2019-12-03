@@ -24,9 +24,9 @@ find "$WORK_DIR/" -mtime +3  -printf "%TD %prn DELETED ! \n" >> $LOG_DIR/backupc
 find ~/backups -mtime +3 -print0 | xargs -r0 rm -rf -- '{}';
 break
 
-
 # If we have files ONLY OLDER than three days we do nothing.
 else printf "%s" "$d": >> $LOG_DIR/backupclean.log && printf " TODAY IS: $TODAY. No file newer than $THREE_DAYS_AGO. NO DELETION ! \n" >> $LOG_DIR/backupclean.log
 
 fi
 done
+exit 0
