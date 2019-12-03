@@ -5,9 +5,9 @@
 # You WILL NEED to have rcloned install and configured prior to running this script.
 # Retention policies have to be configured on the backup targets using cleanBackup.sh
 #####################################################################################
+# TO DO: Implement a backup function, implement better logging to file
+######### VARIABLES DECLARATIONS ####################################################
 PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-
-######### VARIABLES DECLARATIONS ###############################################
 BACKUPDIR='/srv/backup'
 GOOGLE_DRIVE_BACKUPDIR='insert_path_to_directory'
 REMOTE_SERVER_BACKUPDIR="user@host:/srv/backup"
@@ -63,6 +63,7 @@ tar -zcvf $( date -I)-dump.tar.gz dump-$( date -I).sql
 rm -f dump-$( date -I).sql
 
 echo "Creating compressed archive files for backup using tar"
+# TO DO: Create a back up function
 cd $BACKUPDIR
 sleep 1
 tar -zcf $name1.tar.gz $DIR_TO_BACKUP1;
