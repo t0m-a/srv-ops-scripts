@@ -18,7 +18,7 @@ for d in "${RESULTS[@]}"; do
 if [[ "$d" > "$THREE_DAYS_AGO" ]]; then
 
 # Then we print a list of all files OLDER than 3 days in log file
-find "$WORK_DIR/" -mtime +3  -printf "%TD %prn DELETED ! \n" >> $LOG_DIR/backupclean.log
+find "$WORK_DIR/" -mtime +3  -printf "%TD %prn DELETED ! \n" >> $LOG_DIR/backupclean.log && \
 
 # And we delete the files older than 3 days
 find ~/backups -mtime +3 -print0 | xargs -r0 rm -rf -- '{}';
